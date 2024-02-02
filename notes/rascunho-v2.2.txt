@@ -1,0 +1,32 @@
+### CHESS PROJECT 2.2 - Rascunho 
+
+    Redução do algoritmo deconding da notação fen
+        Validação de correlação length entre 'fen_split' e 'rows'
+        Redução de estrutura do loop for (utilização de multi iteradores?)
+
+    Algoritmo de validação do fen input
+        Redução do algoritmo
+        Aumentar a especificação da mensagem de erro de exceção (...at the rows ...[array]...)
+
+    Algoritmo de validação do input move
+        Atualizar regex generalizado
+        Tratar casos de exceção por formatação regex contextualizado
+
+            ->Nome:
+                especificado com valor inesperado  - ?
+            ->crv:
+                opcional especificado sem necessidade - ?
+                opcional não especificado: corrido pelo calculo find_crv >> multiplicidade de crv
+                opcional especificado com valor inesperado >> multiplicidade de crv ?
+            ->x:
+                especificado sem necessidade - ?
+                obrigatório mas não especificado - ?
+            ->crd:
+                não condizente com movimento da peça: corrigido pelo calculo find_crv >> crv vazio
+            ->espcial 1:
+                especificado sem necessidade - ?
+                obrigatório mas não especificado - ?
+            ->especial 2:
+                especificada com valor inesperado - ?
+                especificado na condição não requisitada - ?
+                obrigatório mas não especificada - ?
