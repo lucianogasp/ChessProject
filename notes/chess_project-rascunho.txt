@@ -1,3 +1,5 @@
+# CHESS PROJECT 1.0
+
 ##Map Data
 
 map_data = [
