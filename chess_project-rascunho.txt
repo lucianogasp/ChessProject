@@ -1,0 +1,339 @@
+##Map Data
+
+map_data = [
+    ['t', 'p', 'v', 'v', 'v', 'v', 'P', 'T'],
+    ['c', 'p', 'v', 'v', 'v', 'v', 'P', 'C'],
+    ['b', 'p', 'v', 'v', 'v', 'v', 'P', 'B'],
+    ['d', 'p', 'v', 'v', 'v', 'v', 'P', 'D'],
+    ['r', 'p', 'v', 'v', 'v', 'v', 'P', 'R'],
+    ['b', 'p', 'v', 'v', 'v', 'v', 'P', 'B'],
+    ['c', 'p', 'v', 'v', 'v', 'v', 'P', 'C'],
+    ['t', 'p', 'v', 'v', 'v', 'v', 'P', 'T']
+]
+
+##Bloco do Peão
+
+    if x[0].islower() and cont%2 != 0:
+        if map_data[crd[0]][crd[1] -1] == 'p':
+            map_data[crd[0]][crd[1] -1] = 'v'
+            map_data[crd[0]][crd[1]] = 'p'
+        elif crd[1] == 3:
+            if map_data[crd[0]][crd[1] -2] == 'p':
+                map_data[crd[0]][crd[1] -2] = 'v'
+                map_data[crd[0]][crd[1]] = 'p'
+        else:
+            print('illegal move') break
+    elif x[0].islower() and cont%2 == 0:
+        if map_data[crd[0]][crd[1] +1] == 'P':
+            map_data[crd[0]][crd[1] +1] = 'v'
+            map_data[crd[0]][crd[1]] = 'P'
+        elif crd[1] == 4:
+            if map_data[crd[0]][crd[1] +2] == 'P':
+                map_data[crd[0]][crd[1] +2] = 'v'
+                map_data[crd[0]][crd[1]] = 'P'
+        else:
+            print('illegal move') break
+
+
+##Bloco do Peão 2
+
+    if x[0].islower():
+        p = 'P'
+        j = 1
+        if cont%2 == 0:
+            p = p.lower()
+            j *= -1
+        if not 'x' in x[1:]:
+            for i in range(1, 3):
+                if map_data[crd[0]][crd[1] - i*j] == p:
+                    crv.append(crd[0])
+                    crv.append(crd[1] - i*j)
+                    break
+                elif (cont%2 != 0 and crd[1] != 3) or (cont%2 == 0 and crd[1] != 4):
+                    break
+        elif map_data[crd[0]][crd[1]] != 'v':
+            if map_data[alpha.find(x[0])][crd[1] - 1*j] == p:
+                crv.append(alpha.find(x[0]))
+                crv.append(crd[1] - 1*j)
+            else: return print('illegal move > wrong notation')
+        elif map_data[crd[0]][crd[1] - 1*j] == (p.lower() if p.isupper() else p.upper()) and map_data[crd[0]][crd[1] + 1*j] == 'v':
+            matrix = []
+            fen_split = fen_list[-2].split()[0].split('/')
+            for i in [1, 3] if j > 0 else [6, 4]:
+                lista = []
+                for f in fen_split[i]:
+                    if f.isdigit():
+                        lista += ['v'] * int(f)
+                    else:
+                        lista += f
+                matrix.append(lista)
+            if matrix[0][crd[0]] == (p.lower() if p.isupper() else p.upper()) and matrix[1][crd[0]] == 'v':
+                crv.append(alpha.find(x[0]))
+                crv.append(crd[1] - 1*j)
+                map_data[crd[0]][crd[1] - 1*j] = 'v'
+            else:
+                return print('illegal move > en passant is not a possible move')
+        else:
+            return print('illegal move > wrong notation 2')
+
+
+##Bloco da Torre
+
+        for i in range(1, len(map_data) - crd[0]):
+            if map_data[crd[0] + i][crd[1]] == p:
+                map_data[crd[0] + i][crd[1]] = 'v'
+                map_data[crd[0]][crd[1]] = p
+            elif map_data[crd[0] + i][crd[1]] != 'v': break
+        for i in range(1, crd[0] + 1):
+            if map_data[crd[0] - i][crd[1]] == p:
+                map_data[crd[0] - i][crd[1]] = 'v'
+                map_data[crd[0]][crd[1]] = p
+            elif map_data[crd[0] - i][crd[1]] != 'v': break
+        for i in range(1, len(map_data[0]) - crd[1]):
+            if map_data[crd[0]][crd[1] + i] == p:
+                map_data[crd[0]][crd[1] + i] = 'v'
+                map_data[crd[0]][crd[1]] = p
+            elif map_data[crd[0]][crd[1] + i] != 'v': break
+        for i in range(1, crd[1] + 1):
+            if map_data[crd[0]][crd[1] - i] == p:
+                map_data[crd[0]][crd[1] - i] = 'v'
+                map_data[crd[0]][crd[1]] = p
+            elif map_data[crd[0]][crd[1] - i] != 'v': break
+        if map_data[crd[0]][crd[1]] != p:
+            return print('illegal move')
+
+
+##Bloco da Torre 2
+
+        r = len(map_data) - crd[0]
+        for j in [1, -1]:
+            for i in range(1, r):
+                if map_data[crd[0] + i*j][crd[1]] == p:
+                    map_data[crd[0] + i*j][crd[1]] = 'v'
+                    map_data[crd[0]][crd[1]] = p
+                elif map_data[crd[0] + i*j][crd[1]] != 'v': break
+            r = crd[0] + 1
+        r = len(map_data[0]) - crd[1]
+        for j in [1, -1]:
+            for i in range(1, r):
+                if map_data[crd[0]][crd[1] + i*j] == p:
+                    map_data[crd[0]][crd[1] + i*j] = 'v'
+                    map_data[crd[0]][crd[1]] = p
+                elif map_data[crd[0]][crd[1] + i*j] != 'v': break
+            r = crd[1] + 1
+        if map_data[crd[0]][crd[1]] != p:
+            return print('illegal move')
+
+
+##Bloco do Bispo
+
+        for i in range(1, min(len(map_data) - crd[0], len(map_data[0]) - crd[1])):
+            if map_data[crd[0] + i][crd[1] + i] == p:
+                map_data[crd[0] + i][crd[1] + i] = 'v'
+                map_data[crd[0]][crd[1]] = p
+            elif map_data[crd[0] + i][crd[1] + i] != 'v': break
+        for i in range(1, min(len(map_data) - crd[0], crd[1] + 1)):
+            if map_data[crd[0] + i][crd[1] - i] == p:
+                map_data[crd[0] + i][crd[1] - i] = 'v'
+                map_data[crd[0]][crd[1]] = p
+            elif map_data[crd[0] + i][crd[1] - i] != 'v': break
+        for i in range(1, min(crd[0] + 1, len(map_data[0]) - crd[1])):
+            if map_data[crd[0] - i][crd[1] + i] == p:
+                map_data[crd[0] - i][crd[1] + i] = 'v'
+                map_data[crd[0]][crd[1]] = p
+            elif map_data[crd[0] - i][crd[1] + i] != 'v': break
+        for i in range(1, min(crd[0] + 1, crd[1] + 1)):
+            if map_data[crd[0] - i][crd[1] - i] == p:
+                map_data[crd[0] - i][crd[1] - i] = 'v'
+                map_data[crd[0]][crd[1]] = p
+            elif map_data[crd[0] - i][crd[1] - i] != 'v': break
+        if map_data[crd[0]][crd[1]] != p:
+            return print('illegal move', crd[:], cont)
+
+
+##Bloco do Bisbo 2
+
+        r = min(len(map_data) - crd[0], len(map_data[0]) - crd[1])
+        for j in [1, -1]:
+            for i in range(1, r):
+                if map_data[crd[0] + i*j][crd[1] + i*j] == p:
+                    map_data[crd[0] + i*j][crd[1] + i*j] = 'v'
+                    map_data[crd[0]][crd[1]] = p
+                elif map_data[crd[0] + i*j][crd[1] + i*j] != 'v': break
+            r = min(crd[0] + 1, crd[1] + 1)
+        r = min(len(map_data) - crd[0], crd[1] + 1)
+        for j in [1, -1]:
+            for i in range(1, r):
+                if map_data[crd[0] + i*j][crd[1] - i*j] == p:
+                    map_data[crd[0] + i*j][crd[1] - i*j] = 'v'
+                    map_data[crd[0]][crd[1]] = p
+                elif map_data[crd[0] + i*j][crd[1] - i*j] != 'v': break
+            r = min(crd[0] + 1, len(map_data[0]) - crd[1])
+        if map_data[crd[0]][crd[1]] != p:
+            return print('illegal move', crd)
+
+
+##Estrutura de Verificação de Crv's
+    if len(crv) == 0:
+        return print('illegal move')
+    elif len(crv) == 2:
+        map_data[crv[0]][crv[1]] = 'v'
+        map_data[crd[0]][crd[1]] = p
+    elif len(crv) == 4:
+        if x[1] == x[-2]:
+            return print('illegal notation')
+        elif crv[0] == crv[2]:
+            if x[1].isalpha(): return print('illegal notation')
+            if int(x[1]) - 1 != crv[1] or int(x[1]) - 1 != crv[3]: return print('illegal notation .digit')
+            map_data[crv[0]][int(x[1]) - 1] = 'v'
+        elif crv[1] == crv[3]:
+            if x[1].isdigit(): return print('illegal notation')
+            if int(x[1]) - 1 != crv[0] or int(x[1]) - 1 != crv[2]: return print('illegal notation .alpha')
+            map_data[alpha.find(x[1])][crv[1]] = 'v'
+        elif x[1].isalpha():
+            for i in [0, 2]:
+                if alpha.find(x[1]) in crv[i]:
+                    mapa_data[alpha.find(x[1])][crv[i + 1]] = 'v'
+        else:
+            for i in [1, 3]:
+                if int(x[1] - 1) in crv[i]:
+                    mapa_data[crv[i - 1]][int(x[1]) - 1] = 'v'
+
+        map_data[crd[0]][crd[1]] = p
+
+
+##Bloco da Notação FEN
+
+#   Input FEN:
+map_data = []
+for i in range(8):
+    n_cont = 0
+    sublist = []
+    for f in fen_split[i]:
+        if f.isdigit():
+            n_cont += int(f)
+        else:
+            sublist += f
+        if n_cont > 0:
+            sublist += 'v' * n_cont
+            n_cont = 0
+    map_data.append(sublist)
+
+#   Output FEN:
+        for f in fen_split[i]:
+            if f.isdigit():
+                n_cont += int(f)
+            else:
+                sublist += f
+            if n_cont > 0:
+                sublist += 'v' * n_cont
+                n_cont = 0
+
+#   Output FEN 2:
+        sublist = []
+        for f in fen_split[i]:
+            if f.isdigit():
+                sublist += ['v'] * int(f)
+            else:
+                sublist += f
+
+
+##Bloco Castles (tentativa)
+
+    c = [[4, 5, 6, 7], [0]]
+
+    for i in :
+        if map_data[r[1][1]][r[0][i]] == '_' and map_data[r[1][2]][r[0][i]] == '_':
+            cond1_castle = True
+
+    r = len(map_data) - crd[0]
+    for j in [1, -1]:
+        for i in range(1, r):
+            if map_data[c[0][h] + i*j][c[1][0]] in 'td':
+                cond2_castle = False
+                break
+            elif map_data[crd[0] + i * j][crd[1]] != '_':
+                break
+        r = crd[0] + 1
+
+
+
+
+## Axiomas a serem verificados:
+    [Excluindo a inserção de sinais de qualidade dos movimentos das anotações...]
+    Todas as notações de lances terminam com as coordenadas, sendo o primeiro caracter uma letra (colunas) e o segundo um número (linhas), (com exceção do roque).
+        *en passant?
+        *promoção
+    Todas as notações de lançes definem a peça a ser movida através do primeiro caracter, (com exceção do roque).
+    Todas as notações de capturas possuem um caracter 'x'.
+         Todas as capturas são realizadas em casas ocupadas por outras peças.
+            *en passant
+         Todas as notações de capturas possuem o caracter 'x' na segunda posição ou adiante
+            ☻*multiplos crvs
+
+## Problemas a serem pensados:
+    ☻Movimento do peão
+        ☻captura pra frente permitida (usando notação padrão)
+        ☻captura normal usando outro peão na mesma linha permitida (usando notação padrão) >>> if map_data... and alpha.find(x[0]) +- 1 == crd[0]:    ??
+        ☻confundir captura em crd vazio com en passant (usando notação padrão)
+    ☺Notação FEN
+        ☻FEN_list
+        ☻input FEN
+            ☻FEN Coding
+            ☻FEN De-coding
+            ☻FEN De-coding for en_passant verification
+        ☻Translate
+            ☻input
+            ☻output
+        ☻black/white move
+        roque
+        ☻en passant
+        half move
+        ☻move
+    ☻Função reset
+        ☻reset_move
+        ☻reset_position
+    ☻Move_list
+    ☻Função plot moves
+        ☻plot moves formatado
+        ☻plot fen list formatado
+        ☻plot find fen formatado
+    ☻Multiplicidade de crv
+    ☻Bispos/torres/damas/(peões? não) alinhados geram multiplicidade de crv
+
+    Roque
+        Restrições do roque
+            Casas livres entre as peças
+            Casas não ameaçadas
+            peças não movidas
+
+    Notação de cheque e cheque-mate
+    Restrição de movimentos em momentos de cheque
+    Término no jogo em cheque-mate
+    Empate
+        Afogamento
+
+
+
+## FEN -> f(cont)
+*f(B), f(P) = cont
+
+B 	b  p  f(B)  ->b
+1:	1, 2 / 0 -> 1
+2:	3, 4 / 2 -> 3
+3:	5, 6 / 4 -> 5
+4:	7, 8 / 6 -> 7
+5:	9, 10 / 8 -> 9
+
+f(B) = 2*B - 2
+
+P 	b  p  f(P)  ->p
+... 1:	1, 2 / 1 -> 2
+... 2:	3, 4 / 3 -> 4
+... 3:	5, 6 / 5 -> 6
+... 4:	7, 8 / 7 -> 8
+... 5:	9, 10 / 9 -> 10
+
+f(P) = 2*P - 1
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
