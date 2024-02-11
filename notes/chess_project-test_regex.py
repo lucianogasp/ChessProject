@@ -1,12 +1,14 @@
 import re
 from random import choice
 
-regex = re.compile(r'^(?:[A-Z][a-h]?[1-8]?x?[a-h][1-8]|[a-h]x[a-h][1-8]?(?:=[A-Z])?|[a-h][1-8](?:=[A-Z])?)(?:\+|\+\+|#)?$')
+regex = re.compile(r'^(?:[A-Z][a-h]?[1-8]?x?|[a-h]x)?[a-h][1-8](?:=[A-Z])?(?:\+|\+\+|#)?$')
 
-# Primeiro         r'^(?:[A-Z][a-h]?[1-8]? | [a-h])x?[a-h][1-8]$'
-# Vencedor         r'^(?:[A-Z][a-h]?[1-8]?x?[a-h][1-8] | [a-h]x[a-h][1-8]? | [a-h][1-8])$'
+# Vencedor 3       r'^(?:[A-Z][a-h]?[1-8]?x?|[a-h]x)?[a-h][1-8](?:=[A-Z])?(?:\+|\+\+|#)?$'
+# Vencedor 2       r'^(?:[A-Z][a-h]?[1-8]?x?[a-h][1-8]|[a-h]x[a-h][1-8]?(?:=[A-Z])?|[a-h][1-8](?:=[A-Z])?)(?:\+|\+\+|#)?$'
 # Venc resumido    r'^([A-Z][a-h]?[1-8]?x?([a-h][1-8]) | [a-h]x\1 | \1)$'
+# Vencedor         r'^(?:[A-Z][a-h]?[1-8]?x?[a-h][1-8] | [a-h]x[a-h][1-8]? | [a-h][1-8])$'
 # ChatGPT:         r'^(?:[A-Z]?[a-h][1-8](?:x[a-h][1-8]?)?|[a-h][1-8])$'
+# Primeiro         r'^(?:[A-Z][a-h]?[1-8]? | [a-h])x?[a-h][1-8]$'
 
 strings = ['Ta5', 'Bc5', 'Cc3', 'De1', 'Rh1', 'e4', 'Txh5', 'Bfx3', 'Bg2x', 'Cxxg2', 'xDe5', 'xh2', 'cxd4', 'exd', 'fx6', 'fxx6', 'xf6', 'f6x', 'fe4x', 'fgx', 'fg4', 'dd6', 'ddxe6', 'fx5g', 'fdx5g','Cc3 e4']
 
@@ -17,7 +19,7 @@ chrt = ' '
 el = ''
 lista = list()
 
-for _ in range(5000000):
+for _ in range(500000):
     tag = choice([0, 1, 2])
     if tag == 1:
         el += choice(letras)
@@ -31,7 +33,7 @@ accept = list()
 reject = list()
 for s in lista:
     x = regex.findall(s)
-    if x:
+    if x and len(x[0]) > 2:
         accept += x
     else:
         reject.append(s)

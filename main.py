@@ -5,8 +5,9 @@ from Fen import Fen
 from Move import Move
 from Piece import Queen
 
+import re
+
 fen = Fen()
-move = Move()
 board = Board(fen, rows=8, columns=8)
 
 # Default Settings
@@ -37,15 +38,42 @@ board.plot()
 
 # Move
 
+'''name_Context'''
+
+move = Move('TCBDR')
+
 inp = move.input_move()
-'''move.input_validation(inp)'''
+move.input_validation(inp)
+
+'''sliceCrd'''
+crd_index = list(re.finditer(r'[a-h][1-8]', inp)).pop().start()
+crd0 = inp[crd_index]
+crd1 = inp[crd_index + 1]
+'''convertCrds'''
+alpha = 'abcdefgh'
+crd0 = alpha.index(crd0)
+crd1 = int(crd1) - 1
+'''settingSelfCrd'''
+move.crd = crd0
+move.crd = crd1
+
+'''x_Context'''
+
+matrix_value = board.matrix[move.crd[0]][move.crd[1]]
+if 'x' in inp:
+    if matrix_value == board.blank:
+        '''raiseError'''
+    elif matrix_value.isupper() and fen.fen['turn'] == 'b':
+        '''raiseError'''
+    elif matrix_value.islower() and fen.fen['turn'] == 'p':
+        '''raiseError'''
+else:
+    if matrix_value != board.blank:
+        '''raiseError'''
+
+'''crv_Context | crd_Context'''
 
 name = inp[0]
-
-alpha = 'abcdefgh'
-coord1 = alpha.index(inp[-2])
-coord2 = int(inp[-1]) - 1
-move.crd = inp[coord1, coord2]
 
 if name.islower():
     pass
@@ -53,3 +81,5 @@ elif name == 'D':
     piece = Queen(fen.fen['turn'])
 
 move.find_crv()
+
+'''move.verify_crv(inp)'''

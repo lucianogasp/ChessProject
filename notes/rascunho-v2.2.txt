@@ -13,20 +13,20 @@
         Tratar casos de exceção por formatação regex contextualizado
 
             ->Nome:
-                especificado com valor inesperado  - ?
+                especificado com valor inesperado - corrigido na declaração de instância move >> parâmetro 'piece_name'
             ->crv:
                 opcional especificado sem necessidade - ?
-                opcional não especificado: corrido pelo calculo find_crv >> multiplicidade de crv
-                opcional especificado com valor inesperado >> multiplicidade de crv ?
+                opcional não especificado - corrigido pelo calculo find_crv >> multiplicidade de crv
+                opcional especificado com valor inesperado - corrigido pelo calculo find_crv >> multiplicidade de crv
             ->x:
-                especificado sem necessidade - ?
-                obrigatório mas não especificado - ?
+                especificado sem necessidade - corrigido no bloco x_Context >> if statement + crd
+                obrigatório mas não especificado - corrigido no bloco x_Context >> if statement + crd
             ->crd:
                 não condizente com movimento da peça: corrigido pelo calculo find_crv >> crv vazio
-            ->espcial 1:
+            ->espcial 1 (=''):
+                especificado com valor inesperado - ?
                 especificado sem necessidade - ?
                 obrigatório mas não especificado - ?
-            ->especial 2:
-                especificada com valor inesperado - ?
-                especificado na condição não requisitada - ?
-                obrigatório mas não especificada - ?
+            ->especial 2 (+|++|#):
+                especificado sem necessidade - ?
+                obrigatório mas não especificado - ?
