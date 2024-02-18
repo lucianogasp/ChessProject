@@ -1,13 +1,16 @@
 # CHESS PROJECT 2.2
 
+from typing import Type
+from Board import Board
+
 import re
 
 class Move:
 
-    def __init__(self, piece_name):
+    def __init__(self, piece_names):
         self._crd = list()
         self._crv = list()
-        self.__regex_generic = rf'^(?:[{piece_name}][a-h]?[1-8]?x?|[a-h]x)?[a-h][1-8](?:=[A-Z])?(?:\+|\+\+|#)?$'
+        self.__regex_generic = rf'^(?:[{piece_names}][a-h]?[1-8]?x?|[a-h]x)?[a-h][1-8](?:=[A-Z])?(?:\+|\+\+|#)?$'
         
     @property
     def crd(self) -> list:
@@ -36,6 +39,31 @@ class Move:
         verify = re.search(regexp, inp)
         if not verify:
             '''raise Error'''
+            raise re.error(f'"{regexp}" pattern did not match in the input string "{inp}"')
+
+    def find_crv(self, piece: Type[any], board: Type[Board]):
+
+        for dir in piece.direction:
+            for sense in piece.sense:
+
+                flag = step = 0
+
+                while flag < piece.distancing:
+                    step += 1
+
+                    crv0 = self.crd[0] + step*sense*dir[0]
+                    crv1 = self.crd[1] + step*sense*dir[1]
+
+                    if not (board.rows - 1) >= crv0 >= 0 or not (board.columns - 1) >= crv1 >= 0:
+                        break
+
+                    if board.matrix[crv0][crv1] == piece.name:
+                        self.crv = (crv0, crv1)
+                        break
+                    elif board.matrix[crv0][crv1] != board.blank:
+                        break
+
+                    flag += 1
 
     def verify_crv(self, inp) -> None:
         
@@ -78,29 +106,3 @@ class Move:
                 regex_context = re.compile(r'^.(?:[a-h]|[1-8]|[a-h][1-8]).+')
                 self.input_validation(inp, regex_context)
     
-    def find_crv(self):
-        pass
-'''
-        for k in self.piece.k:          # Define direção
-            for j in self.piece.j:          # Define sentido
-
-                flag = i = 0
-
-                while flag < self.piece.flag:   # Define o passo do movimento
-                    i += 1
-
-                    crv0 = self.crd[0] + i*j*k[0]
-                    crv1 = self.crd[1] + i*j*k[1]
-
-                    if not (self.rows - 1) >= crv0 >= 0 or not (self.columns - 1) >= crv1 >= 0:
-                        break
-
-                    if self.matrix[crv0][crv1] == self.piece.name:
-                        self.crv.append(crv0)
-                        self.crv.append(crv1)
-                        break
-                    elif self.matrix[crv0][crv1] != self.blank:
-                        break
-
-                    flag += 1
-'''
