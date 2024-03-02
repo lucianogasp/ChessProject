@@ -1,8 +1,6 @@
 # CHESS PROJECT 2.2 - TEST
 
-from Piece import Oi
+lista = [(1, 2)]
 
-sla = Oi()
-
-print(sla)
-print(type(sla))
+print(lista[0][0])
+print(lista[0][1])

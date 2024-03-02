@@ -1,16 +1,16 @@
 # CHESS PROJECT 2.2
 
 from typing import Type
-from Board import Board
 
 import re
 
 class Move:
 
-    def __init__(self, piece_names):
+    def __init__(self, piece_names, board):
         self._crd = list()
         self._crv = list()
         self.__regex_generic = rf'^(?:[{piece_names}][a-h]?[1-8]?x?|[a-h]x)?[a-h][1-8](?:=[A-Z])?(?:\+|\+\+|#)?$'
+        self.board = board
         
     @property
     def crd(self) -> list:
@@ -41,7 +41,7 @@ class Move:
             '''raise Error'''
             raise re.error(f'"{regexp}" pattern did not match in the input string "{inp}"')
 
-    def find_crv(self, piece: Type[any], board: Type[Board]):
+    def find_crv(self, piece: Type[any]) -> None:
 
         for dir in piece.direction:
             for sense in piece.sense:
@@ -54,55 +54,100 @@ class Move:
                     crv0 = self.crd[0] + step*sense*dir[0]
                     crv1 = self.crd[1] + step*sense*dir[1]
 
-                    if not (board.rows - 1) >= crv0 >= 0 or not (board.columns - 1) >= crv1 >= 0:
+                    if not (self.board.rows - 1) >= crv0 >= 0 or not (self.board.columns - 1) >= crv1 >= 0:
                         break
 
-                    if board.matrix[crv0][crv1] == piece.name:
+                    if self.board.matrix[crv0][crv1] == piece.name:
                         self.crv = (crv0, crv1)
                         break
-                    elif board.matrix[crv0][crv1] != board.blank:
+                    elif self.board.matrix[crv0][crv1] != self.board.blank:
                         break
 
                     flag += 1
-
-    def verify_crv(self, inp) -> None:
-        
-        if len(self.crv) == 0:
-            '''raise Error'''
-            pass
-        elif len(self.crv) == 1:
-            '''matrix update'''
-            pass
-        else:
-            '''CRV's multiplicity logic'''
-            crv0, crv1 = zip(*self.crv)
-            rep0 = set()
-            rep1 = set()
-            for (first, second) in self.crv:
-                if crv0.count(first) > 1:
-                    rep0.add(first)
-                if crv1.count(second) > 1:
-                    rep1.add(second)
-            
-            if len(rep0) > 0 and len(rep1) > 0:
-                '''regex context logic - col e row'''
-                regex_context = re.compile(r'^.[a-h][1-8].+')
-                self.input_validation(inp, regex_context)
-
-                
-
-            elif len(rep0) > 0:
-                '''regex context logic - col'''
-                regex_context = re.compile(r'^.[1-8].+')
-                self.input_validation(inp, regex_context)
-
-            elif len(rep1) > 0:
-                '''regex context logic - row'''
-                regex_context = re.compile(r'^.[a-h].+')
-                self.input_validation(inp, regex_context)
-
-            else:
-                '''...'''
-                regex_context = re.compile(r'^.(?:[a-h]|[1-8]|[a-h][1-8]).+')
-                self.input_validation(inp, regex_context)
     
+    def update_matrix(self, piece: Type[any], crv) -> None:
+        
+        self.board.matrix[self.crd[0]][self.crd[1]] = piece.name
+        self.board.matrix[crv[0][0]][crv[0][1]] = self.board.blank
+
+    def verify_crv(self, inp: str) -> None:
+
+        if len(self.crv) == 0:
+            '''raiseError'''
+            raise Exception('illegal move >> empty crv')
+        
+        elif len(self.crv) == 1:
+            pass
+        
+        else:
+            self.__multiplicity_crv(inp)
+
+    def __multiplicity_crv(self, inp):
+            
+        crv0, crv1 = zip(*self.crv)
+        if re.search(r'.[a-h][1-8]x?[a-h][1-8].*', inp):
+            '''column and row case'''
+            crv0_inp, crv1_inp = self.convert_inpNotation(inp[1], inp[2])
+            if not any(map(lambda x: x[0] == crv0_inp, self.crv)):
+                '''raiseError'''
+                raise Exception(f'there is no crv at column {inp[1]}')
+            if not any(map(lambda x: x[1] == crv1_inp, self.crv)):
+                '''raseError'''
+                raise Exception(f'there is no crv at row {inp[2]}')
+            
+            for tup in self.crv:
+                if tup == (crv0_inp, crv1_inp):
+                    self.crv.clear()
+                    self.crv = tup
+                    break
+        
+        elif re.search(r'.[a-h]x?[a-h][1-8].*', inp):
+            '''column case'''
+            crv0_inp = self.convert_inpNotation(inp[1])
+            if not any(map(lambda x: x[0] == crv0_inp, self.crv)):
+                '''raseError'''
+                raise Exception(f'there is no crv at column {inp[1]}')
+            if crv0.count(crv0_inp) > 1:
+                '''raseError'''
+                raise Exception(f'ambiguos move in column {inp[1]}')
+            
+            for tup in self.crv:
+                if tup[0] == crv0_inp:
+                    self.crv.clear()
+                    self.crv = tup
+                    break
+        
+        elif re.search(r'.[1-8]x?[a-h][1-8].*', inp):
+            '''row case'''
+            crv1_inp = self.convert_inpNotation(inp[1])
+            if not any(map(lambda x: x[1] == crv1_inp, self.crv)):
+                '''raiseError'''
+                raise Exception(f'there is no crv at row {inp[1]}')
+            if crv1.count(crv1_inp) > 1:
+                '''raiseError'''
+                raise Exception(f'ambiguos move in row {inp[1]}')
+        
+            for tup in self.crv:
+                if tup[1] == crv1_inp:
+                    self.crv.clear()
+                    self.crv = tup
+                    break
+
+        else:
+            '''raiseError'''
+            raise Exception('ambiguos move >> needed a crv input')
+    
+    @staticmethod
+    def convert_inpNotation(inp1: str=None, inp2: str=None) -> int:
+
+        if inp1 is not None and inp2 is not None:
+            cr0 = 'abcdefgh'.index(inp1)
+            cr1 = int(inp2) - 1
+            return cr0, cr1
+        elif inp1.isalpha():
+            cr0 = 'abcdefgh'.index(inp1)
+            return cr0
+        else:
+            cr1 = int(inp1) - 1
+            return cr1
+

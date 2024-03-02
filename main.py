@@ -13,7 +13,7 @@ board = Board(fen, rows=8, columns=8)
 # Default Settings
 
 fen_keys = ['code', 'turn', 'en_passant', 'move']
-fen_values = ['rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 'w', '-', 1]
+fen_values = ['5Q2/8/5Q1Q/8/R6R/8/N7/3N4', 'w', '-', 1]
 
 trans = True
 trans_keys = ['code', 'turn']
@@ -40,7 +40,7 @@ board.plot()
 
 '''name_Context'''
 
-move = Move('TCBDR')
+move = Move('TCBDR', board)
 
 inp = move.input_move()
 move.input_validation(inp)
@@ -84,9 +84,11 @@ if name.islower():
 elif name == 'D':
     piece = Queen(fen.fen['turn'])
 
-move.find_crv(piece, board)
+move.find_crv(piece)
 
-'''move.verify_crv(inp)'''
+move.verify_crv(inp)
+
+move.update_matrix(piece, move.crv)
 
 print(f'crd: {move.crd},\ncrv: {move.crv}\nfen notation: {fen.fen}')
 board.plot()
