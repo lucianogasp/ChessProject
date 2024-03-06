@@ -1,6 +1,7 @@
 # CHESS PROJECT 2.2
 
 from typing import Type
+from Fen import Fen
 
 import re
 
@@ -65,10 +66,10 @@ class Move:
 
                     flag += 1
     
-    def update_matrix(self, piece: Type[any], crv) -> None:
+    def update_matrix(self, piece: Type[any]) -> None:
         
         self.board.matrix[self.crd[0]][self.crd[1]] = piece.name
-        self.board.matrix[crv[0][0]][crv[0][1]] = self.board.blank
+        self.board.matrix[self.crv[0][0]][self.crv[0][1]] = self.board.blank
 
     def verify_crv(self, inp: str) -> None:
 
@@ -87,7 +88,7 @@ class Move:
         crv0, crv1 = zip(*self.crv)
         if re.search(r'.[a-h][1-8]x?[a-h][1-8].*', inp):
             '''column and row case'''
-            crv0_inp, crv1_inp = self.convert_inpNotation(inp[1], inp[2])
+            crv0_inp, crv1_inp = self.convert_inputNotation(inp[1], inp[2])
             if not any(map(lambda x: x[0] == crv0_inp, self.crv)):
                 '''raiseError'''
                 raise Exception(f'there is no crv at column {inp[1]}')
@@ -103,7 +104,7 @@ class Move:
         
         elif re.search(r'.[a-h]x?[a-h][1-8].*', inp):
             '''column case'''
-            crv0_inp = self.convert_inpNotation(inp[1])
+            crv0_inp = self.convert_inputNotation(inp[1])
             if not any(map(lambda x: x[0] == crv0_inp, self.crv)):
                 '''raseError'''
                 raise Exception(f'there is no crv at column {inp[1]}')
@@ -119,7 +120,7 @@ class Move:
         
         elif re.search(r'.[1-8]x?[a-h][1-8].*', inp):
             '''row case'''
-            crv1_inp = self.convert_inpNotation(inp[1])
+            crv1_inp = self.convert_inputNotation(inp[1])
             if not any(map(lambda x: x[1] == crv1_inp, self.crv)):
                 '''raiseError'''
                 raise Exception(f'there is no crv at row {inp[1]}')
@@ -138,16 +139,39 @@ class Move:
             raise Exception('ambiguos move >> needed a crv input')
     
     @staticmethod
-    def convert_inpNotation(inp1: str=None, inp2: str=None) -> int:
+    def slice_inputCrd(inp: str) -> str:
+        crd_index = list(re.finditer(r'[a-h][1-8]', inp)).pop().start()
+        return inp[crd_index], inp[crd_index + 1]
+
+    @staticmethod
+    def convert_inputNotation(inp1: str=None, inp2: str=None) -> int:
 
         if inp1 is not None and inp2 is not None:
-            cr0 = 'abcdefgh'.index(inp1)
+            cr0 = ord(inp1) - ord('a')
             cr1 = int(inp2) - 1
             return cr0, cr1
         elif inp1.isalpha():
-            cr0 = 'abcdefgh'.index(inp1)
+            cr0 = ord(inp1) - ord('a')
             return cr0
         else:
             cr1 = int(inp1) - 1
             return cr1
 
+    def verify_x(self, inp: str, fen: Type[Fen], crd0_inpNotation: str, crd1_inpNotation: str) -> None:
+        
+        matrix_value = self.board.matrix[self.crd[0]][self.crd[1]]
+        if 'x' in inp:
+            if matrix_value == self.board.blank:
+                '''raiseError'''
+                raise Exception('"x" not correctly inserted >> must not be used in a move with blank crd')
+            elif matrix_value.isupper() and fen.fen['turn'] == 'b':
+                '''raiseError'''
+                raise Exception(f'illegal move >> {crd0_inpNotation}{crd1_inpNotation} is a square occupied by the white piece "{matrix_value}"')
+            elif matrix_value.islower() and fen.fen['turn'] == 'p':
+                '''raiseError'''
+                raise Exception(f'illegal move >> {crd0_inpNotation}{crd1_inpNotation} is a square occupied by the black piece "{matrix_value}"')
+        else:
+            if matrix_value != self.board.blank:
+                '''raiseError'''
+                raise Exception(f'"x" not correctly inserted >> must be used in a move with an occuped crd')
+        

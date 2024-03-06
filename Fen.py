@@ -16,6 +16,7 @@ class Fen:
     @fen.setter
     def fen(self, new_fen: dict) -> None:
         self._fen = new_fen
+    
     def decoding(self, blank: str) -> List[list]:
 
         fen_split = self._fen['code'].split('/')
