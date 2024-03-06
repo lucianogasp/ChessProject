@@ -11,7 +11,7 @@ board = Board(fen, rows=8, columns=8)
 # Default Settings
 
 fen_keys = ['code', 'turn', 'en_passant', 'move']
-fen_values = ['rnbqkbnr/pppppppp/7p/8/8/7P/PPPPPPPP/RNBQKBNR', 'b', '-', '1']
+fen_values = ['rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 'w', '-', '1']
 # fen_values = ['5Q2/3K4/5Q1Q/8/R6R/8/N4BPp/3N4', 'w', '-', 1]
 
 trans = True
@@ -71,6 +71,12 @@ move.verify_crv(inp)
 move.update_matrix(piece)
 
 # Update Fen
+
+matriz = board.transpose_matrix_to_plot(board.matrix)
+fen.fen['code'] = fen.coding(matriz, board.blank)
+fen.fen['turn'] = 'p' if fen.fen['turn'] == 'b' else 'b'
+if fen.fen['turn'] == 'b':
+    fen.fen['move'] = str(int(fen.fen['move']) + 1)
 
 print(f'crd: {move.crd},\ncrv: {move.crv}\nfen notation: {fen.fen}')
 board.plot()

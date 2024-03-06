@@ -66,11 +66,6 @@ class Move:
 
                     flag += 1
     
-    def update_matrix(self, piece: Type[any]) -> None:
-        
-        self.board.matrix[self.crd[0]][self.crd[1]] = piece.name
-        self.board.matrix[self.crv[0][0]][self.crv[0][1]] = self.board.blank
-
     def verify_crv(self, inp: str) -> None:
 
         if len(self.crv) == 0:
@@ -138,6 +133,11 @@ class Move:
             '''raiseError'''
             raise Exception('ambiguos move >> needed a crv input')
     
+    def update_matrix(self, piece: Type[any]) -> None:
+        
+        self.board.matrix[self.crd[0]][self.crd[1]] = piece.name
+        self.board.matrix[self.crv[0][0]][self.crv[0][1]] = self.board.blank
+
     @staticmethod
     def slice_inputCrd(inp: str) -> str:
         crd_index = list(re.finditer(r'[a-h][1-8]', inp)).pop().start()

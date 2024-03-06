@@ -32,6 +32,29 @@ class Fen:
             matriz.append(sublist)
 
         return matriz
+    
+    def coding(self, matrix: List[list], blank: str) -> str:
+
+        fen_code = list()
+
+        for row in matrix:
+            blank_cont = 0
+            fen_sublist = ''
+            for square in row:
+                if square == blank:
+                    blank_cont += 1
+                else:
+                    if blank_cont > 0:
+                        fen_sublist += str(blank_cont)
+                        blank_cont = 0
+                    fen_sublist += square
+            if blank_cont > 0:
+                fen_sublist += str(blank_cont)
+            
+            fen_code.append(fen_sublist)
+        fen_code = '/'.join(fen_code)
+
+        return fen_code
 
     @staticmethod
     def set_fen(fen_keys: list, fen_values: list) -> dict:
