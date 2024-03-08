@@ -47,7 +47,7 @@ class Knight:
 
 class Pawn:
 
-    def __init__(self, color: str, crd: list):
+    def __init__(self, color: str, crd: list, inp: str):
         self.color = color
         self.name = 'P' if self.color == 'b' else 'p'
         self.direction = ((0, 1),)
@@ -56,3 +56,6 @@ class Pawn:
 
         if self.color == 'b' and crd[1] == 3 or self.color == 'p' and crd[1] == 4:
             self.distancing += 1
+        
+        if 'x' in inp:
+            self.direction = ((1, 1), (-1, 1))

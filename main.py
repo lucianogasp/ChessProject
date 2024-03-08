@@ -39,44 +39,51 @@ board.plot()
 
 move = Move('TCBDR', board)
 
-inp = move.input_move()
-move.input_validation(inp)
+while True:
 
-crd0_inpNotation, crd1_inpNotation = move.slice_inputCrd(inp)
+    inp = move.input_move()
+    move.input_validation(inp)
 
-move.crd = move.convert_inputNotation(crd0_inpNotation)
-move.crd = move.convert_inputNotation(crd1_inpNotation)
+    crd0_inpNotation, crd1_inpNotation = move.slice_inputCrd(inp)
 
-move.verify_x(inp, fen, crd0_inpNotation, crd1_inpNotation)
+    move.crd = move.convert_inputNotation(crd0_inpNotation)
+    move.crd = move.convert_inputNotation(crd1_inpNotation)
 
-name = inp[0]
+    move.verify_x(inp, fen, crd0_inpNotation, crd1_inpNotation)
 
-if name.islower():
-    piece = Pawn(fen.fen['turn'], move.crd)
-elif name == 'R':
-    piece = King(fen.fen['turn'])
-elif name == 'D':
-    piece = Queen(fen.fen['turn'])
-elif name == 'T':
-    piece = Rook(fen.fen['turn'])
-elif name == 'B':
-    piece = Bishop(fen.fen['turn'])
-elif name == 'C':
-    piece = Knight(fen.fen['turn'])
+    name = inp[0]
 
-move.find_crv(piece)
-move.verify_crv(inp)
+    if name.islower():
+        piece = Pawn(fen.fen['turn'], move.crd, inp)
+    elif name == 'R':
+        piece = King(fen.fen['turn'])
+    elif name == 'D':
+        piece = Queen(fen.fen['turn'])
+    elif name == 'T':
+        piece = Rook(fen.fen['turn'])
+    elif name == 'B':
+        piece = Bishop(fen.fen['turn'])
+    elif name == 'C':
+        piece = Knight(fen.fen['turn'])
 
-# Update Matrix
-move.update_matrix(piece)
+    move.find_crv(piece)
+    move.verify_crv(inp)
 
-# Update Fen
+    # Update Matrix
+    move.update_matrix(piece)
 
-matriz = board.transpose_matrix_to_plot(board.matrix)
-fen.fen['code'] = fen.coding(matriz, board.blank)
-fen.fen['turn'] = 'p' if fen.fen['turn'] == 'b' else 'b'
-if fen.fen['turn'] == 'b':
-    fen.fen['move'] = str(int(fen.fen['move']) + 1)
+    # Update Fen
 
-print(f'crd: {move.crd},\ncrv: {move.crv}\nfen notation: {fen.fen}')
-board.plot()
+    matriz = board.transpose_matrix_to_plot(board.matrix)
+    fen.fen['code'] = fen.coding(matriz, board.blank)
+    fen.fen['turn'] = 'p' if fen.fen['turn'] == 'b' else 'b'
+    if fen.fen['turn'] == 'b':
+        fen.fen['move'] = str(int(fen.fen['move']) + 1)
+
+    print(f'crd: {move.crd},\ncrv: {move.crv}\nfen notation: {fen.fen}')
+    board.plot()
+
+    # Reset Attributes
+
+    move.crd.clear()
+    move.crv.clear()

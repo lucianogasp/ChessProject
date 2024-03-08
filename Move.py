@@ -42,14 +42,31 @@ class Move:
             '''raise Error'''
             raise re.error(f'"{regexp}" pattern did not match in the input string "{inp}"')
 
+    def verify_x(self, inp: str, fen: Type[Fen], crd0_inpNotation: str, crd1_inpNotation: str) -> None:
+        
+        matrix_value = self.board.matrix[self.crd[0]][self.crd[1]]
+        if 'x' in inp:
+            if matrix_value == self.board.blank:
+                '''raiseError'''
+                raise Exception('"x" not correctly inserted >> must not be used in a move with blank crd')
+            elif matrix_value.isupper() and fen.fen['turn'] == 'b':
+                '''raiseError'''
+                raise Exception(f'illegal move >> {crd0_inpNotation}{crd1_inpNotation} is a square occupied by the white piece "{matrix_value}"')
+            elif matrix_value.islower() and fen.fen['turn'] == 'p':
+                '''raiseError'''
+                raise Exception(f'illegal move >> {crd0_inpNotation}{crd1_inpNotation} is a square occupied by the black piece "{matrix_value}"')
+        else:
+            if matrix_value != self.board.blank:
+                '''raiseError'''
+                raise Exception(f'"x" not correctly inserted >> must be used in a move with an occuped crd')
+            
     def find_crv(self, piece: Type[any]) -> None:
 
         for dir in piece.direction:
             for sense in piece.sense:
 
-                flag = step = 0
-
-                while flag < piece.distancing:
+                step = 0
+                while step < piece.distancing:
                     step += 1
 
                     crv0 = self.crd[0] + step*sense*dir[0]
@@ -63,8 +80,6 @@ class Move:
                         break
                     elif self.board.matrix[crv0][crv1] != self.board.blank:
                         break
-
-                    flag += 1
     
     def verify_crv(self, inp: str) -> None:
 
@@ -157,21 +172,4 @@ class Move:
             cr1 = int(inp1) - 1
             return cr1
 
-    def verify_x(self, inp: str, fen: Type[Fen], crd0_inpNotation: str, crd1_inpNotation: str) -> None:
-        
-        matrix_value = self.board.matrix[self.crd[0]][self.crd[1]]
-        if 'x' in inp:
-            if matrix_value == self.board.blank:
-                '''raiseError'''
-                raise Exception('"x" not correctly inserted >> must not be used in a move with blank crd')
-            elif matrix_value.isupper() and fen.fen['turn'] == 'b':
-                '''raiseError'''
-                raise Exception(f'illegal move >> {crd0_inpNotation}{crd1_inpNotation} is a square occupied by the white piece "{matrix_value}"')
-            elif matrix_value.islower() and fen.fen['turn'] == 'p':
-                '''raiseError'''
-                raise Exception(f'illegal move >> {crd0_inpNotation}{crd1_inpNotation} is a square occupied by the black piece "{matrix_value}"')
-        else:
-            if matrix_value != self.board.blank:
-                '''raiseError'''
-                raise Exception(f'"x" not correctly inserted >> must be used in a move with an occuped crd')
         

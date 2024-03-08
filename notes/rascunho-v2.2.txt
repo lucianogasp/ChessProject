@@ -1,4 +1,6 @@
-### CHESS PROJECT 2.2 - Rascunho 
+### CHESS PROJECT 2.2 - Rascunho
+
+Lista de Problemas a serem resolvidos:
 
     Redução do algoritmo deconding da notação fen
         Validação de correlação length entre 'fen_split' e 'rows'
@@ -12,15 +14,15 @@
         Atualizar regex generalizado
         Tratar casos de exceção por formatação regex contextualizado
 
-☻            ->Nome:
+            ->Nome:
                 especificado com valor inesperado - corrigido na declaração de instância move >> parâmetro 'piece_name'
             ->crv:
                 opcional especificado sem necessidade - ?
                 opcional não especificado - corrigido pelo calculo find_crv >> multiplicidade de crv
                 opcional especificado com valor inesperado - corrigido pelo calculo find_crv >> multiplicidade de crv
-☻            ->x:
-                especificado sem necessidade - corrigido no bloco x_Context >> if statement + crd
-                obrigatório mas não especificado - corrigido no bloco x_Context >> if statement + crd
+            ->x:
+                especificado sem necessidade - corrigido pelo metodo verify_x >> 'x' in and blank
+                obrigatório mas não especificado - corrigido pelo metodo verify_x >> 'x' not in and not blank
             ->crd:
                 não condizente com movimento da peça - corrigido pelo calculo find_crv >> crv vazio
             ->espcial 1 (=''):
@@ -30,3 +32,5 @@
             ->especial 2 (+|++|#):
                 especificado sem necessidade - ?
                 obrigatório mas não especificado - ?
+    
+    Movimento En-passant
