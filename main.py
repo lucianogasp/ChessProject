@@ -1,9 +1,6 @@
 # CHESS PROJECT 2.2 - EXECUTION
 
-from Board import Board
-from Fen import Fen
-from Move import Move
-from Piece import King, Queen, Rook, Bishop, Knight, Pawn
+from Modules import Board, Fen, Move, King, Queen, Rook, Bishop, Knight, Pawn
 
 fen = Fen()
 board = Board(fen, rows=8, columns=8)
@@ -45,16 +42,16 @@ while True:
     move.input_validation(inp)
 
     crd0_inpNotation, crd1_inpNotation = move.slice_inputCrd(inp)
+    move.crd = move.convert_CrdInpNotation(crd0_inpNotation)
+    move.crd = move.convert_CrdInpNotation(crd1_inpNotation)
 
-    move.crd = move.convert_inputNotation(crd0_inpNotation)
-    move.crd = move.convert_inputNotation(crd1_inpNotation)
+    capture = move.slice_inputCapture(inp)
+    move.capture_validation(capture, fen, crd0_inpNotation, crd1_inpNotation)
 
-    move.verify_x(inp, fen, crd0_inpNotation, crd1_inpNotation)
-
-    name = inp[0]
+    name = move.slice_inputName(inp)
 
     if name.islower():
-        piece = Pawn(fen.fen['turn'], move.crd, inp)
+        piece = Pawn(fen.fen['turn'])
     elif name == 'R':
         piece = King(fen.fen['turn'])
     elif name == 'D':
@@ -65,9 +62,15 @@ while True:
         piece = Bishop(fen.fen['turn'])
     elif name == 'C':
         piece = Knight(fen.fen['turn'])
+    
+    if isinstance(piece, Pawn):
+        if capture:
+            piece.direction = ((1, 1), (-1, 1))
+        if piece.name.isupper() and move.crd[1] == 3 or piece.name.islower() and move.crd[1] == 4:
+            piece.distancing = 1
 
     move.find_crv(piece)
-    move.verify_crv(inp)
+    move.crv_validation(inp)
 
     # Update Matrix
     move.update_matrix(piece)

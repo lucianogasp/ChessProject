@@ -1,7 +1,7 @@
 # CHESS PROJECT 2.2
 
 from typing import Type, List
-from Fen import Fen
+from Modules import Fen
 
 
 class Board:

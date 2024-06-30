@@ -1,11 +1,11 @@
 # CHESS PROJECT 2.2
 
-from typing import List, Union
+from typing import List
 
 
 class Fen:
 
-    def __init__(self):
+    def __init__(self) -> None:
 
         self._fen = None
 

@@ -1,16 +1,18 @@
 # CHESS PROJECT 2.2
 
 from typing import Type
-from Fen import Fen
+from Modules import Fen, Piece
 
 import re
 
 class Move:
 
-    def __init__(self, piece_names, board):
+    def __init__(self, piece_names: str, board: Type[any]) -> None:
+
         self._crd = list()
         self._crv = list()
         self.__regex_generic = rf'^(?:[{piece_names}][a-h]?[1-8]?x?|[a-h]x)?[a-h][1-8](?:=[A-Z])?(?:\+|\+\+|#)?$'
+        
         self.board = board
         
     @property
@@ -26,7 +28,7 @@ class Move:
         return self._crv
     
     @crv.setter
-    def crv(self, value: int) -> None:
+    def crv(self, value: tuple) -> None:
         self.crv.append(value)
 
     def input_move(self) -> str:
@@ -42,10 +44,11 @@ class Move:
             '''raise Error'''
             raise re.error(f'"{regexp}" pattern did not match in the input string "{inp}"')
 
-    def verify_x(self, inp: str, fen: Type[Fen], crd0_inpNotation: str, crd1_inpNotation: str) -> None:
+    def capture_validation(self, capture: bool, fen: Type[Fen], crd0_inpNotation: str, crd1_inpNotation: str) -> None:
         
         matrix_value = self.board.matrix[self.crd[0]][self.crd[1]]
-        if 'x' in inp:
+
+        if capture:
             if matrix_value == self.board.blank:
                 '''raiseError'''
                 raise Exception('"x" not correctly inserted >> must not be used in a move with blank crd')
@@ -58,9 +61,9 @@ class Move:
         else:
             if matrix_value != self.board.blank:
                 '''raiseError'''
-                raise Exception(f'"x" not correctly inserted >> must be used in a move with an occuped crd')
+                raise Exception(f'"x" not correctly inserted >> must be used in a move with an occupied crd')
             
-    def find_crv(self, piece: Type[any]) -> None:
+    def find_crv(self, piece: Type[Piece]) -> None:
 
         for dir in piece.direction:
             for sense in piece.sense:
@@ -81,7 +84,7 @@ class Move:
                     elif self.board.matrix[crv0][crv1] != self.board.blank:
                         break
     
-    def verify_crv(self, inp: str) -> None:
+    def crv_validation(self, inp: str) -> None:
 
         if len(self.crv) == 0:
             '''raiseError'''
@@ -98,7 +101,7 @@ class Move:
         crv0, crv1 = zip(*self.crv)
         if re.search(r'.[a-h][1-8]x?[a-h][1-8].*', inp):
             '''column and row case'''
-            crv0_inp, crv1_inp = self.convert_inputNotation(inp[1], inp[2])
+            crv0_inp, crv1_inp = self.convert_CrdInpNotation(inp[1], inp[2])
             if not any(map(lambda x: x[0] == crv0_inp, self.crv)):
                 '''raiseError'''
                 raise Exception(f'there is no crv at column {inp[1]}')
@@ -114,7 +117,7 @@ class Move:
         
         elif re.search(r'.[a-h]x?[a-h][1-8].*', inp):
             '''column case'''
-            crv0_inp = self.convert_inputNotation(inp[1])
+            crv0_inp = self.convert_CrdInpNotation(inp[1])
             if not any(map(lambda x: x[0] == crv0_inp, self.crv)):
                 '''raseError'''
                 raise Exception(f'there is no crv at column {inp[1]}')
@@ -130,7 +133,7 @@ class Move:
         
         elif re.search(r'.[1-8]x?[a-h][1-8].*', inp):
             '''row case'''
-            crv1_inp = self.convert_inputNotation(inp[1])
+            crv1_inp = self.convert_CrdInpNotation(inp[1])
             if not any(map(lambda x: x[1] == crv1_inp, self.crv)):
                 '''raiseError'''
                 raise Exception(f'there is no crv at row {inp[1]}')
@@ -156,10 +159,25 @@ class Move:
     @staticmethod
     def slice_inputCrd(inp: str) -> str:
         crd_index = list(re.finditer(r'[a-h][1-8]', inp)).pop().start()
-        return inp[crd_index], inp[crd_index + 1]
+        crd0_inpNotation = inp[crd_index]
+        crd1_inpNotation = inp[crd_index + 1]
+        return crd0_inpNotation, crd1_inpNotation
+    
+    @staticmethod
+    def slice_inputCapture(inp: str) -> bool:
+        if 'x' in inp:
+            capture = True
+        else:
+            capture = False
+        return capture
 
     @staticmethod
-    def convert_inputNotation(inp1: str=None, inp2: str=None) -> int:
+    def slice_inputName(inp: str) -> str:
+        name = inp[0]
+        return name
+
+    @staticmethod
+    def convert_CrdInpNotation(inp1: str=None, inp2: str=None) -> int:
 
         if inp1 is not None and inp2 is not None:
             cr0 = ord(inp1) - ord('a')
