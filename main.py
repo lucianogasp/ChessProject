@@ -1,6 +1,6 @@
 # CHESS PROJECT 2.2 - EXECUTION
 
-from Modules import Fen, Board, InputMove, EngineMove, Piece, King, Queen, Rook, Bishop, Knight, Pawn
+from Modules import Fen, Board, InputMove, EngineMove, Piece, King, Queen, Rook, Bishop, Knight, Pawn, ExceptionMoves
 
 fen = Fen()
 board = Board(fen, rows=8, columns=8)
@@ -39,15 +39,23 @@ engine = EngineMove(board)
 
 while True:
 
+    # Input / Validation
+
     inp = move.input_move()
     move.input_validation(inp)
+
+    # Slicing Crd Input / Setting Crd
 
     crd0_inpNotation, crd1_inpNotation = move.slice_inputCrd(inp)
     engine.crd = move.convert_CrdInpNotation(crd0_inpNotation)
     engine.crd = move.convert_CrdInpNotation(crd1_inpNotation)
 
+    # Slicing Capture Input / Validation
+
     capture = move.slice_inputCapture(inp)
     move.capture_validation(board, capture, fen.fen['turn'], engine.crd[0], engine.crd[1], crd0_inpNotation, crd1_inpNotation)
+
+    # Slicing Piece Name / Instantiating
 
     name = move.slice_inputName(inp)
 
@@ -64,11 +72,12 @@ while True:
     elif name == 'C':
         piece = Knight(fen.fen['turn'])
     
-    if isinstance(piece, Pawn):
-        if capture:
-            piece.direction = ((1, 1), (-1, 1))
-        if piece.name.isupper() and engine.crd[1] == 3 or piece.name.islower() and engine.crd[1] == 4:
-            piece.distancing = 1
+    # Exeption Moves
+
+    ExceptionMoves().pawnDoubleMove(piece, engine)
+    ExceptionMoves().pawnCaptureMove(piece, capture)
+
+    # Move / Validation
 
     engine.find_crv(piece)
     engine.crv_validation(inp)
