@@ -1,6 +1,6 @@
 # CHESS PROJECT 2.2 - EXECUTION
 
-from Modules import Board, Fen, Move, King, Queen, Rook, Bishop, Knight, Pawn
+from Modules import Fen, Board, InputMove, EngineMove, Piece, King, Queen, Rook, Bishop, Knight, Pawn
 
 fen = Fen()
 board = Board(fen, rows=8, columns=8)
@@ -34,7 +34,8 @@ board.plot()
 
 # Move
 
-move = Move('TCBDR', board)
+move = InputMove('TCBDR')
+engine = EngineMove(board)
 
 while True:
 
@@ -42,11 +43,11 @@ while True:
     move.input_validation(inp)
 
     crd0_inpNotation, crd1_inpNotation = move.slice_inputCrd(inp)
-    move.crd = move.convert_CrdInpNotation(crd0_inpNotation)
-    move.crd = move.convert_CrdInpNotation(crd1_inpNotation)
+    engine.crd = move.convert_CrdInpNotation(crd0_inpNotation)
+    engine.crd = move.convert_CrdInpNotation(crd1_inpNotation)
 
     capture = move.slice_inputCapture(inp)
-    move.capture_validation(capture, fen, crd0_inpNotation, crd1_inpNotation)
+    move.capture_validation(board, capture, fen.fen['turn'], engine.crd[0], engine.crd[1], crd0_inpNotation, crd1_inpNotation)
 
     name = move.slice_inputName(inp)
 
@@ -66,14 +67,14 @@ while True:
     if isinstance(piece, Pawn):
         if capture:
             piece.direction = ((1, 1), (-1, 1))
-        if piece.name.isupper() and move.crd[1] == 3 or piece.name.islower() and move.crd[1] == 4:
+        if piece.name.isupper() and engine.crd[1] == 3 or piece.name.islower() and engine.crd[1] == 4:
             piece.distancing = 1
 
-    move.find_crv(piece)
-    move.crv_validation(inp)
+    engine.find_crv(piece)
+    engine.crv_validation(inp)
 
     # Update Matrix
-    move.update_matrix(piece)
+    engine.update_matrix(piece)
 
     # Update Fen
 
@@ -83,10 +84,10 @@ while True:
     if fen.fen['turn'] == 'b':
         fen.fen['move'] = str(int(fen.fen['move']) + 1)
 
-    print(f'crd: {move.crd},\ncrv: {move.crv}\nfen notation: {fen.fen}')
+    print(f'crd: {engine.crd},\ncrv: {engine.crv}\nfen notation: {fen.fen}')
     board.plot()
 
     # Reset Attributes
 
-    move.crd.clear()
-    move.crv.clear()
+    engine.crd.clear()
+    engine.crv.clear()
