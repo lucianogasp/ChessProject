@@ -1,7 +1,7 @@
 # CHESS PROJECT 2.2
 
 from typing import Type
-from Modules import Board, Piece
+from Modules import Board, Piece, InputMove
 
 import re
 
@@ -22,13 +22,21 @@ class EngineMove:
     def crd(self, value: int) -> None:
         self._crd.append(value)
     
+    @crd.deleter
+    def crd(self) -> None:
+        self._crd.clear()
+    
     @property
     def crv(self) -> list:
         return self._crv
     
     @crv.setter
     def crv(self, value: tuple) -> None:
-        self.crv.append(value)
+        self._crv.append(value)
+    
+    @crv.deleter
+    def crv(self) -> None:
+        self._crv.clear()
             
     def find_crv(self, piece: Type[Piece]) -> None:
 
@@ -51,7 +59,7 @@ class EngineMove:
                     elif self._board.matrix[crv0][crv1] != self._board.blank:
                         break
     
-    def crv_validation(self, inp: str) -> None:
+    def crv_validation(self, inp: str, move: Type[InputMove]) -> None:
 
         if len(self.crv) == 0:
             '''raiseError'''
@@ -61,63 +69,69 @@ class EngineMove:
             pass
         
         else:
-            self.__multiplicity_crv(inp)
+            self.__multiplicity_crv(inp, move)
+    
+    def __multiplicity_crv(self, inp, move: Type[InputMove]):
 
-    def __multiplicity_crv(self, inp):
-            
-        crv0, crv1 = zip(*self.crv)
-        if re.search(r'.[a-h][1-8]x?[a-h][1-8].*', inp):
-            '''column and row case'''
-            crv0_inp, crv1_inp = self.convert_CrdInpNotation(inp[1], inp[2])
-            if not any(map(lambda x: x[0] == crv0_inp, self.crv)):
-                '''raiseError'''
-                raise Exception(f'there is no crv at column {inp[1]}')
-            if not any(map(lambda x: x[1] == crv1_inp, self.crv)):
-                '''raseError'''
-                raise Exception(f'there is no crv at row {inp[2]}')
-            
-            for tup in self.crv:
-                if tup == (crv0_inp, crv1_inp):
-                    self.crv.clear()
-                    self.crv = tup
-                    break
-        
-        elif re.search(r'.[a-h]x?[a-h][1-8].*', inp):
-            '''column case'''
-            crv0_inp = self.convert_CrdInpNotation(inp[1])
-            if not any(map(lambda x: x[0] == crv0_inp, self.crv)):
-                '''raseError'''
-                raise Exception(f'there is no crv at column {inp[1]}')
-            if crv0.count(crv0_inp) > 1:
-                '''raseError'''
-                raise Exception(f'ambiguos move in column {inp[1]}')
-            
-            for tup in self.crv:
-                if tup[0] == crv0_inp:
-                    self.crv.clear()
-                    self.crv = tup
-                    break
-        
-        elif re.search(r'.[1-8]x?[a-h][1-8].*', inp):
-            '''row case'''
-            crv1_inp = self.convert_CrdInpNotation(inp[1])
-            if not any(map(lambda x: x[1] == crv1_inp, self.crv)):
-                '''raiseError'''
-                raise Exception(f'there is no crv at row {inp[1]}')
-            if crv1.count(crv1_inp) > 1:
-                '''raiseError'''
-                raise Exception(f'ambiguos move in row {inp[1]}')
-        
-            for tup in self.crv:
-                if tup[1] == crv1_inp:
-                    self.crv.clear()
-                    self.crv = tup
-                    break
+        crv_column, crv_row = zip(*self.crv)
+        crv_input = move.slice_inputCrv(inp)
 
-        else:
+        if crv_input is None:
             '''raiseError'''
             raise Exception('ambiguos move >> needed a crv input')
+
+        elif crv_input.isalpha():
+
+            crv0 = move.convert_CrInpNotation(crv_input)
+            if not crv0 in crv_column:
+                '''raiseError'''
+                raise Exception(f'there is no crv at column {crv_input}')
+            if crv_column.count(crv0) > 1:
+                '''raiseError'''
+                raise Exception(f'ambiguos move in column {crv_input}')
+
+            new_crv, = tuple(filter(lambda x: crv0 == x[0], self.crv))
+            del self.crv
+            self.crv = new_crv
+
+        elif crv_input.isdigit():
+
+            crv1 = move.convert_CrInpNotation(crv_input)
+            if not crv1 in crv_row:
+                '''raiseError'''
+                raise Exception(f'there is no crv at row {crv_input}')
+            if crv_row.count(crv1) > 1:
+                '''raiseError'''
+                raise Exception(f'ambiguos move in row {crv_input}')
+            
+            crv0 = [tup[0] for tup in self.crv if tup[1] == crv1]
+            crv0, = crv0
+            
+            if crv_column.count(crv0) <= 1:
+                '''raiseError'''
+                raise Exception('by convention the crv input must be mentioned by column instead of row')
     
+            new_crv, = tuple(filter(lambda x: crv1 == x[1], self.crv))
+            del self.crv
+            self.crv = new_crv
+
+        elif crv_input.isalnum():
+
+            crv0, crv1 = move.convert_CrInpNotation(crv_input)
+            if not (crv0, crv1) in self.crv:
+                '''raiseError'''
+                raise Exception(f'there is no crv at {crv_input}')
+            if crv_column.count(crv0) <= 1:
+                '''raiseError'''
+                raise Exception('by convention the crv input must be mentioned by column instead of column and row')
+            if crv_row.count(crv1) <= 1:
+                '''raiseError'''
+                raise Exception('by convention the crv input must be mentioned by row instead of column and row')
+    
+            new_crv, = tuple(filter(lambda x: (crv0, crv1) == x, self.crv))
+            del self.crv
+            self.crv = new_crv
+
     def update_matrix(self, piece: Type[Piece]) -> None:
         
         self._board.matrix[self.crd[0]][self.crd[1]] = piece.name

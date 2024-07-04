@@ -8,8 +8,8 @@ board = Board(fen, rows=8, columns=8)
 # Default Settings
 
 fen_keys = ['code', 'turn', 'en_passant', 'move']
-fen_values = ['rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 'w', '-', '1']
-# fen_values = ['5Q2/3K4/5Q1Q/8/R6R/8/N4BPp/3N4', 'w', '-', 1]
+# fen_values = ['rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 'w', '-', '1']
+fen_values = ['1R3Q2/3K4/5Q1Q/8/R6R/2p5/N4BPp/1R1N4', 'w', '-', 1]
 
 trans = True
 trans_keys = ['code', 'turn']
@@ -47,8 +47,8 @@ while True:
     # Slicing Crd Input / Setting Crd
 
     crd0_inpNotation, crd1_inpNotation = move.slice_inputCrd(inp)
-    engine.crd = move.convert_CrdInpNotation(crd0_inpNotation)
-    engine.crd = move.convert_CrdInpNotation(crd1_inpNotation)
+    engine.crd = move.convert_CrInpNotation(crd0_inpNotation)
+    engine.crd = move.convert_CrInpNotation(crd1_inpNotation)
 
     # Slicing Capture Input / Validation
 
@@ -80,7 +80,7 @@ while True:
     # Move / Validation
 
     engine.find_crv(piece)
-    engine.crv_validation(inp)
+    engine.crv_validation(inp, move)
 
     # Update Matrix
     engine.update_matrix(piece)
@@ -98,5 +98,5 @@ while True:
 
     # Reset Attributes
 
-    engine.crd.clear()
-    engine.crv.clear()
+    del engine.crd
+    del engine.crv

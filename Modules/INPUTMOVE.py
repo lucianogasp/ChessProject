@@ -32,18 +32,19 @@ class InputMove:
         return crd0_inpNotation, crd1_inpNotation
 
     @staticmethod
-    def convert_CrdInpNotation(inp1: str=None, inp2: str=None) -> int:
-
-        if inp1 is not None and inp2 is not None:
-            cr0 = ord(inp1) - ord('a')
-            cr1 = int(inp2) - 1
-            return cr0, cr1
-        elif inp1.isalpha():
-            cr0 = ord(inp1) - ord('a')
+    def convert_CrInpNotation(input: str) -> int:
+        
+        if input.isalpha():
+            cr0 = ord(input) - ord('a')
             return cr0
-        else:
-            cr1 = int(inp1) - 1
+        elif input.isdigit():
+            cr1 = int(input) - 1
             return cr1
+        else:
+            cr0 = ord(input[0]) - ord('a')
+            cr1 = int(input[1]) - 1
+            return cr0, cr1
+
 
     @staticmethod
     def slice_inputCapture(inp: str) -> bool:
@@ -78,3 +79,16 @@ class InputMove:
 
         name = inp[0]
         return name
+    
+    @staticmethod
+    def slice_inputCrv(inp: str) -> str:
+
+        crv_reObject = list(re.finditer(r'[a-h][1-8]|[a-h]|[1-8]', inp))
+        crv_reObject.pop()
+        if not crv_reObject:
+            return None
+        crv_reObject, = crv_reObject
+        crv_index_start = crv_reObject.start()
+        crv_index_end = crv_reObject.end()
+        crv_inpNotation = inp[crv_index_start:crv_index_end]
+        return crv_inpNotation
