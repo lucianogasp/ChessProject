@@ -9,7 +9,7 @@ board = Board(fen, rows=8, columns=8)
 
 fen_keys = ['code', 'turn', 'en_passant', 'move']
 # fen_values = ['rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 'w', '-', '1']
-fen_values = ['1R3Q2/3K4/5Q1Q/8/R6R/2p5/N4BPp/1R1N4', 'w', '-', 1]
+fen_values = ['1R3Q2/3K4/5Q1Q/8/R3p2R/2p5/N5P1/1R1N4', 'w', '-', 1]
 
 trans = True
 trans_keys = ['code', 'turn']
@@ -72,9 +72,9 @@ while True:
     elif name == 'C':
         piece = Knight(fen.fen['turn'])
     
-    # Exeption Moves
+    # Exception Moves
 
-    ExceptionMoves().pawnDoubleMove(piece, engine)
+    ExceptionMoves().pawnDoubleMove(piece, capture, engine)
     ExceptionMoves().pawnCaptureMove(piece, capture)
 
     # Move / Validation

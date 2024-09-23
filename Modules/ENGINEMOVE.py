@@ -42,11 +42,9 @@ class EngineMove:
 
         for dir in piece.direction:
             for sense in piece.sense:
-
                 step = 0
                 while step < piece.distancing:
                     step += 1
-
                     crv0 = self.crd[0] + step*sense*dir[0]
                     crv1 = self.crd[1] + step*sense*dir[1]
 
@@ -71,7 +69,7 @@ class EngineMove:
         else:
             self.__multiplicity_crv(inp, move)
     
-    def __multiplicity_crv(self, inp, move: Type[InputMove]):
+    def __multiplicity_crv(self, inp: str, move: Type[InputMove]) -> None:
 
         crv_column, crv_row = zip(*self.crv)
         crv_input = move.slice_inputCrv(inp)
