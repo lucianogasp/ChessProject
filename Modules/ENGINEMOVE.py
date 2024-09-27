@@ -78,9 +78,9 @@ class EngineMove:
             '''raiseError'''
             raise Exception('ambiguos move >> needed a crv input')
 
-        elif crv_input.isalpha():
+        if crv_input.isalpha():
 
-            crv0 = move.convert_CrInpNotation(crv_input)
+            crv0 = move.convert_CrInp_to_matrix(crv_input)
             if not crv0 in crv_column:
                 '''raiseError'''
                 raise Exception(f'there is no crv at column {crv_input}')
@@ -94,7 +94,7 @@ class EngineMove:
 
         elif crv_input.isdigit():
 
-            crv1 = move.convert_CrInpNotation(crv_input)
+            crv1 = move.convert_CrInp_to_matrix(crv_input)
             if not crv1 in crv_row:
                 '''raiseError'''
                 raise Exception(f'there is no crv at row {crv_input}')
@@ -115,7 +115,7 @@ class EngineMove:
 
         elif crv_input.isalnum():
 
-            crv0, crv1 = move.convert_CrInpNotation(crv_input)
+            crv0, crv1 = move.convert_CrInp_to_matrix(crv_input)
             if not (crv0, crv1) in self.crv:
                 '''raiseError'''
                 raise Exception(f'there is no crv at {crv_input}')
@@ -130,7 +130,6 @@ class EngineMove:
             del self.crv
             self.crv = new_crv
 
-    def update_matrix(self, piece: Type[Piece]) -> None:
+    def update_matrix(self, column: int, row: int, value: str) -> None:
         
-        self._board.matrix[self.crd[0]][self.crd[1]] = piece.name
-        self._board.matrix[self.crv[0][0]][self.crv[0][1]] = self._board.blank
+        self._board.matrix[column][row] = value

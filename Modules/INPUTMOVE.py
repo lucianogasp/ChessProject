@@ -1,12 +1,12 @@
 # CHESS PROJECT 2.2
 
-from typing import Type
+from typing import Type, Tuple
 from Modules import Board
 import re
 
 class InputMove:
 
-    def __init__(self, piece_names):
+    def __init__(self, piece_names) -> None:
 
         self.__regex_generic = rf'^(?:[{piece_names}][a-h]?[1-8]?x?|[a-h]x)?[a-h][1-8](?:=[A-Z])?(?:\+|\+\+|#)?$'
     
@@ -24,7 +24,7 @@ class InputMove:
             raise re.error(f'"{regexp}" pattern did not match in the input string "{inp}"')
     
     @staticmethod
-    def slice_inputCrd(inp: str) -> str:
+    def slice_inputCrd(inp: str) -> Tuple[str, str]:
 
         crd_index = list(re.finditer(r'[a-h][1-8]', inp)).pop().start()
         crd0_inpNotation = inp[crd_index]
@@ -32,7 +32,7 @@ class InputMove:
         return crd0_inpNotation, crd1_inpNotation
 
     @staticmethod
-    def convert_CrInpNotation(input: str) -> int:
+    def convert_CrInp_to_matrix(input: str) -> Tuple[int, int]:
         
         if input.isalpha():
             cr0 = ord(input) - ord('a')
@@ -40,10 +40,17 @@ class InputMove:
         elif input.isdigit():
             cr1 = int(input) - 1
             return cr1
-        else:
+        elif input.isalnum():
             cr0 = ord(input[0]) - ord('a')
             cr1 = int(input[1]) - 1
             return cr0, cr1
+    
+    @staticmethod
+    def convert_CrMatrix_to_inp(cr0: int, cr1: int) -> str:
+        
+        crAlpha = chr(cr0 + ord('a'))
+        crNum = str(cr1 + 1)
+        return crAlpha + crNum
 
 
     @staticmethod
@@ -63,10 +70,10 @@ class InputMove:
             if matrix_value == board.blank:
                 '''raiseError'''
                 raise Exception('"x" not correctly inserted >> must not be used in a move with blank crd')
-            elif matrix_value.isupper() and turn == 'b':
+            if matrix_value.isupper() and turn == 'b':
                 '''raiseError'''
                 raise Exception(f'illegal move >> {crd0_inpNotation}{crd1_inpNotation} is a square occupied by the white piece "{matrix_value}"')
-            elif matrix_value.islower() and turn == 'p':
+            if matrix_value.islower() and turn == 'p':
                 '''raiseError'''
                 raise Exception(f'illegal move >> {crd0_inpNotation}{crd1_inpNotation} is a square occupied by the black piece "{matrix_value}"')
         else:

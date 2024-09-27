@@ -1,6 +1,6 @@
 # CHESS PROJECT 2.2 - EXECUTION
 
-from Modules import Fen, Board, InputMove, EngineMove, Piece, King, Queen, Rook, Bishop, Knight, Pawn, ExceptionMoves
+from Modules import Fen, Board, InputMove, EngineMove, King, Queen, Rook, Bishop, Knight, Pawn, ExceptionMoves
 
 fen = Fen()
 board = Board(fen, rows=8, columns=8)
@@ -8,8 +8,8 @@ board = Board(fen, rows=8, columns=8)
 # Default Settings
 
 fen_keys = ['code', 'turn', 'en_passant', 'move']
-# fen_values = ['rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 'w', '-', '1']
-fen_values = ['1R3Q2/3K4/5Q1Q/8/R3p2R/2p5/N5P1/1R1N4', 'w', '-', 1]
+fen_values = ['rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR', 'b', '-', '1']
+# fen_values = ['1R3Q2/3K4/5Q1Q/4p3/R2PPp1R/2p5/N2P2P1/1R1N4', 'w', '-', 1]
 
 trans = True
 trans_keys = ['code', 'turn']
@@ -44,17 +44,6 @@ while True:
     inp = move.input_move()
     move.input_validation(inp)
 
-    # Slicing Crd Input / Setting Crd
-
-    crd0_inpNotation, crd1_inpNotation = move.slice_inputCrd(inp)
-    engine.crd = move.convert_CrInpNotation(crd0_inpNotation)
-    engine.crd = move.convert_CrInpNotation(crd1_inpNotation)
-
-    # Slicing Capture Input / Validation
-
-    capture = move.slice_inputCapture(inp)
-    move.capture_validation(board, capture, fen.fen['turn'], engine.crd[0], engine.crd[1], crd0_inpNotation, crd1_inpNotation)
-
     # Slicing Piece Name / Instantiating
 
     name = move.slice_inputName(inp)
@@ -72,6 +61,24 @@ while True:
     elif name == 'C':
         piece = Knight(fen.fen['turn'])
     
+    # Slicing Crd Input / Setting Crd
+
+    crd0_inpNotation, crd1_inpNotation = move.slice_inputCrd(inp)
+    engine.crd = move.convert_CrInp_to_matrix(crd0_inpNotation)
+    engine.crd = move.convert_CrInp_to_matrix(crd1_inpNotation)
+
+    # Slicing Capture Input / Validation
+
+    capture = move.slice_inputCapture(inp)
+    try:
+        move.capture_validation(board, capture, fen.fen['turn'], engine.crd[0], engine.crd[1], crd0_inpNotation, crd1_inpNotation)
+    except Exception as exception:
+        inpCrd = crd0_inpNotation + crd1_inpNotation
+        if piece.name in 'Pp' and inpCrd == fen.fen['en_passant']:
+            pass
+        else:
+            raise exception
+
     # Exception Moves
 
     ExceptionMoves().pawnDoubleMove(piece, capture, engine)
@@ -83,13 +90,23 @@ while True:
     engine.crv_validation(inp, move)
 
     # Update Matrix
-    engine.update_matrix(piece)
+    engine.update_matrix(engine.crd[0], engine.crd[1], piece.name)
+    engine.update_matrix(engine.crv[0][0], engine.crv[0][1], board.blank)
+
+    inpCrd = crd0_inpNotation + crd1_inpNotation
+    if piece.name == 'P' and inpCrd == fen.fen['en_passant']:
+        engine.update_matrix(engine.crd[0], engine.crd[1] - 1, board.blank)
+    if piece.name == 'p' and inpCrd == fen.fen['en_passant']:
+        engine.update_matrix(engine.crd[0], engine.crd[1] + 1, board.blank)    
 
     # Update Fen
 
     matriz = board.transpose_matrix_to_plot(board.matrix)
     fen.fen['code'] = fen.coding(matriz, board.blank)
     fen.fen['turn'] = 'p' if fen.fen['turn'] == 'b' else 'b'
+
+    fen.fen['en_passant'] = ExceptionMoves().enpassantMove(piece, engine, board, move)
+
     if fen.fen['turn'] == 'b':
         fen.fen['move'] = str(int(fen.fen['move']) + 1)
 
