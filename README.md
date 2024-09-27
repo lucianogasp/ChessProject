@@ -153,40 +153,59 @@ O arquivo main.py é o script onde os módulos contendo todas as classes são im
 
 ### \# Default Settings <br>
 
-Onde variáveis relacionadas a construção da notação fen inicial e procedimentos iniciais relacionados são configurados
+Onde variáveis relacionadas a construção da notação fen inicial e procedimentos iniciais relacionados são configurados.
 
 ### \# FEN Settings <br>
 
-Onde a notação fen é definida
+Onde a notação fen é definida.
 
 ### \# Matrix Settings <br>
 
-Onde a matriz do tabuleiro é definida
+Onde a matriz do tabuleiro é definida.
 
 ### \# Plot Matrix <br>
 
-Onde a configuração inicial das peças no tabuleiro é impressa
+Onde a configuração inicial das peças no tabuleiro é impressa.
 
 ### \# Move <br>
 
-Onde o input dos movimentos são executados. O loop é inicializado. <br>
-O padrão regex_generic é aplicado para validação. <br>
-O CRD é definido pelo input. <br>
-Uma estrutura de controle if else instancia uma peça a sua respectiva classe, definindo nome, cor e atributos de movimentação da peça. <br>
-O cáculo de movimentação das peças é executado. <br>
-O CRV é verificado.
+Onde o input dos movimentos são executados. O loop é inicializado.
 
-### \# Update Matrix <br>
+#### \# Input / Validation <br>
 
-A matriz do tabulerio é atualizada.
+Um input de um movimento é realizado e validado usando o padrão regex_gereric.
 
-### \# Update Fen <br>
+#### \# Slicing Piece Name / Instantiating <br>
 
-As informações da notação fen é atualizada.
+O nome da peça é definida pelo input e uma estrutura de controle if else a instancia em sua respectiva classe, configurando nome, cor e atributos de movimentação da peça.
 
-### \# Reset attributes <br>
+#### \# Slicing Crd Input / Setting Crd <br>
 
-Os atributos modificados na execução do movimento são resetados.
+O CRD é definido pelo input.
+
+#### \# Slicing Capture Input / Validation <br>
+
+O caractere que define captura no movimento e tratado e validado. Aqui, abrem-se exceções para casos de movimento En Passant.
+
+#### \# Exception Moves <br>
+
+Movimentos de exceção como salto duplo do peão e movimento de captura do peão são tratados e verificados.
+
+#### \# Move / Validation <br>
+
+O cáculo de movimentação das peças é executado. O CRV é verificado.
+
+#### \# Update Matrix <br>
+
+A matriz do tabulerio é atualizada. Abrem-se exceções novamente para o caso de captura em En Passant.
+
+#### \# Update Fen <br>
+
+As informações da notação fen são atualizada.
+
+#### \# Reset attributes <br>
+
+Os atributos modificados durante a execução do movimento são resetados.
 
 # Resalvas:
 
@@ -194,9 +213,8 @@ Os atributos modificados na execução do movimento são resetados.
 
 - Regex_context para "Especial 1" e "Especial 2" do padrão de expressão regular
 - Interface do usuário
-- Movimento En-passant
 - Mecânicas de roque, cheque, cheque-mate, empate
 
 ## Erros / Imprecisões
 
-- Regex impreciso >> possibilitando entradas com caracteres especificados sem necessidade em movimentos ambíguos.
+...
